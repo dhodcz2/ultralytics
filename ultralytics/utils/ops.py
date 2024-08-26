@@ -176,7 +176,7 @@ def non_max_suppression(
     rotated=False,
 ):
     """
-    Perform non-maximum suppression (NMS) on a set of boxes, with support for masks and multiple labels per box.
+    Perform non-maximum suppression (NMS) on a set of boxes, with support for masks and multiple labels per box3.
 
     Args:
         prediction (torch.Tensor): A tensor of shape (batch_size, num_classes + 4 + num_masks, num_boxes)

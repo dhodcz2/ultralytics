@@ -1,4 +1,5 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
+import clip.simple_tokenizer
 
 import contextlib
 from copy import deepcopy
@@ -614,8 +615,16 @@ class WorldModel(DetectionModel):
         model = self.clip_model if cache_clip_model else clip.load("ViT-B/32")[0]
         device = next(model.parameters()).device
         text_token = clip.tokenize(text).to(device)
-        txt_feats = [model.encode_text(token).detach() for token in text_token.split(batch)]
-        txt_feats = txt_feats[0] if len(txt_feats) == 1 else torch.cat(txt_feats, dim=0)
+        txt_feats = [
+            model
+            .encode_text(token)
+            .detach()
+            for token in text_token.split(batch)
+        ]
+        if len(txt_feats) == 1:
+            txt_feats = txt_feats[0]
+        else:
+            txt_feats = torch.cat(txt_feats, dim=0)
         txt_feats = txt_feats / txt_feats.norm(p=2, dim=-1, keepdim=True)
         self.txt_feats = txt_feats.reshape(-1, len(text), txt_feats.shape[-1])
         self.model[-1].nc = len(text)

@@ -1152,6 +1152,13 @@ class Masks(BaseTensor):
             for x in ops.masks2segments(self.data)
         ]
 
+    def __setattr__(self, key, value):
+        if key == 'data':
+            ...
+
+        super().__setattr__(key, value)
+
+
 
 class Keypoints(BaseTensor):
     """

@@ -90,3 +90,4 @@ class WorldTrainer(yolo.detect.DetectionTrainer):
         txt_feats = txt_feats / txt_feats.norm(p=2, dim=-1, keepdim=True)
         batch["txt_feats"] = txt_feats.reshape(len(batch["texts"]), -1, txt_feats.shape[-1])
         return batch
+

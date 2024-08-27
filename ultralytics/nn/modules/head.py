@@ -2,6 +2,7 @@
 """Model head modules."""
 
 import copy
+import itertools
 import math
 
 import torch
@@ -297,9 +298,21 @@ class WorldDetect(Detect):
     def forward(self, x, text):
         """Concatenates and returns predicted bounding boxes and class probabilities."""
         for i in range(self.nl):
-            x[i] = torch.cat((self.cv2[i](x[i]), self.cv4[i](self.cv3[i](x[i]), text)), 1)
+            # x[i] = torch.cat((self.cv2[i](x[i]), self.cv4[i](self.cv3[i](x[i]), text)), 1)
+            cv2_output = self.cv2[i](x[i])
+            cv3_output = self.cv3[i](x[i])
+            cv4_output = self.cv4[i](cv3_output, text)
+            x[i] = torch.cat((cv2_output, cv4_output), dim=1)
         if self.training:
             return x
+        # for i, cv in itertools.product(range(self.nl), [self.cv2, self.cv3, self.cv4]):
+        #     print(f"{i}: {cv[i]}")
+        # for i in range(self.nl):
+        #     print('LAYER ', i)
+        #     for cv in [self.cv2, self.cv3, self.cv4]:
+        #         print(cv[i])
+        #     print('\n\n\n\n')
+
 
         # Inference path
         shape = x[0].shape  # BCHW
